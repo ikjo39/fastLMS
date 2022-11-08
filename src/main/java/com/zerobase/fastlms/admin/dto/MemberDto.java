@@ -23,4 +23,8 @@ public class MemberDto {
     LocalDateTime resetPasswordLimitDt;
 
     Role role;
+
+    // query  추가할 것임
+    long totalCount;
+    long seq;
 }
