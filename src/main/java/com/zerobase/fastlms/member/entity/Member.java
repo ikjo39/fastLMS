@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder // 쉽게 값을 채울 수 있음
 @Data
 @Entity
-public class Member {
+public class Member implements MemberCode{
     @Id
     private String userId;
 
@@ -37,4 +37,7 @@ public class Member {
     // 2. 관리자 별도
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    // 이용가능한 상태, 정지 상태
+    private String userStatus;
 }
