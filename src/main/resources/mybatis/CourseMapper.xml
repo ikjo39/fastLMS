@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zerobase.fastlms.admin.mapper.MemberMapper">
+<mapper namespace="com.zerobase.fastlms.course.mapper.CourseMapper">
 
     <sql id="selectListWhere">
         <if test="searchType != null and searchValue != null">
@@ -30,21 +30,19 @@
         </if>
     </sql>
 
-    <!-- select 태그는 parameterType은 중요하지 않음 -->
     <select id="selectListCount" resultType="long">
         select count(*)
-        from member
+        from course
         where 1 = 1
 
         <include refid="selectListWhere"/>
 
     </select>
 
-    <select id="selectList" resultType="com.zerobase.fastlms.admin.dto.MemberDto">
+    <select id="selectList" resultType="com.zerobase.fastlms.course.dto.CourseDto">
         select *
-        from member
+        from course
         where 1 = 1
-
         <include refid="selectListWhere"/>
 
         limit #{pageStart}, #{pageEnd}
