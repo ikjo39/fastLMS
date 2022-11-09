@@ -88,39 +88,39 @@
                 </tr>
             </thead>
             <tbody>
-            <tr th:each="x : ${list}">
-                <td th:text="${x.id}">
-                    <input th:value="${x.id}" type="hidden" name="id"/>
-                    <p th:text="${x.id}"></p>
-                </td>
-                <td>
-                    <input th:value="${x.categoryName}" type="text" name="categoryName"/>
-                </td>
-                <td>
-                    <input th:value="${x.sortValue}" type="text" name="sortValue"/>
-                </td>
-                <td>
-                    <!-- th:name 선언 이유: 이름이 각 표 줄마다 달라야함 -->
-                    <input th:checked="${x.usingYn}" th:name="'usingYn_' + ${x.id}" type="checkbox" value="true"/>
-                    <label th:for="'usingYn_' + ${x.id}">사용</label>
-                </td>
-                <td>
-                    <div class="inline-div">
-                        <button class="update-button" type="button">수정</button>
-                    </div>
-                    <div class="inline-div">
-                        <form name="deleteForm" method="post" action="/admin/category/delete.do">
-                            <input th:value="${x.id}" type="hidden" name="id"/>
-                            <button type="submit">삭제</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            <tr th:if="${#lists.size(list) < 1}">
-                <td colspan="5">
-                    <p class="nothing">내용이 없습니다.</p>
-                </td>
-            </tr>
+                <tr th:each="x : ${list}">
+                    <td th:text="${x.id}">
+                        <input th:value="${x.id}" type="hidden" name="id"/>
+                        <p th:text="${x.id}"></p>
+                    </td>
+                    <td>
+                        <input th:value="${x.categoryName}" type="text" name="categoryName"/>
+                    </td>
+                    <td>
+                        <input th:value="${x.sortValue}" type="text" name="sortValue"/>
+                    </td>
+                    <td>
+                        <!-- th:name 선언 이유: 이름이 각 표 줄마다 달라야함 -->
+                        <input th:checked="${x.usingYn}" th:name="'usingYn_' + ${x.id}" type="checkbox" value="true"/>
+                        <label th:for="'usingYn_' + ${x.id}">사용</label>
+                    </td>
+                    <td>
+                        <div class="inline-div">
+                            <button class="update-button" type="button">수정</button>
+                        </div>
+                        <div class="inline-div">
+                            <form name="deleteForm" method="post" action="/admin/category/delete.do">
+                                <input th:value="${x.id}" type="hidden" name="id"/>
+                                <button type="submit">삭제</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.size(list) < 1}">
+                    <td colspan="5">
+                        <p class="nothing">내용이 없습니다.</p>
+                    </td>
+                </tr>
             </tbody>
         </table>
 

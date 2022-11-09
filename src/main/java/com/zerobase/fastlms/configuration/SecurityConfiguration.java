@@ -53,6 +53,8 @@ public class SecurityConfiguration {
         authenticationManager = authenticationManagerBuilder.build();
 
 
+        http.headers().frameOptions().sameOrigin();
+
         http
                 .cors().disable()
 
