@@ -6,33 +6,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-public class Course {
+public class TakeCourse implements TakeCourseCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    long categoryId;
+    long courseId;
 
-    String imagePath;
-    String keyword;
-    String subject;
+    String userId;
 
-    @Column(length = 1000)
-    String summary;
+    long payPrice; // 결제금액
 
-    @Lob
-    String contents;
-    long price;
-    long salePrice;
-    LocalDate saleEndDt;
+    String status; // 상태(수강신청, 결재완료, 수강취소)
 
     LocalDateTime regDt; // 등록일
-    LocalDateTime udtDt;    // 수정일
 }

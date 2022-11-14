@@ -1,5 +1,9 @@
 package com.zerobase.fastlms.member.controller;
 
+import com.zerobase.fastlms.admin.dto.MemberDto;
+import com.zerobase.fastlms.course.dto.TakeCourseDto;
+import com.zerobase.fastlms.course.model.ServiceResult;
+import com.zerobase.fastlms.course.service.TakeCourseService;
 import com.zerobase.fastlms.member.model.MemberInput;
 import com.zerobase.fastlms.member.model.ResetPasswordInput;
 import com.zerobase.fastlms.member.service.MemberService;
@@ -11,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -18,6 +24,7 @@ public class MemberController {
 
     //    @Autowired 권장 X -> 생성자로 주입받게끔 함 -> @RequiredArgsConstructor
     private final MemberService memberService;
+    private final TakeCourseService takeCourseService;
 
     // /member/registor
     //    @RequestMapping(value="/member/register", method = RequestMethod.GET)
@@ -78,8 +85,84 @@ public class MemberController {
     }
 
     @GetMapping("/member/info")
-    public String memberInfo() {
+    public String memberInfo(Model model, Principal principal) {
+
+        String userId = principal.getName();
+        MemberDto detail = memberService.detail(userId);
+
+        model.addAttribute("detail", detail);
+
+
         return "member/info";
+    }
+
+    @PostMapping("/member/info")
+    public String memberInfoSubmit(
+            Model model
+            , MemberInput parameter
+            , Principal principal) {
+
+        String userId = principal.getName();
+        parameter.setUserId(userId);
+
+        ServiceResult result = memberService.updateMember(parameter);
+
+        if (!result.isResult()) {
+            model.addAttribute("message", result.getMessage());
+            return "common/error";
+        }
+
+        return "redirect:/member/info";
+    }
+
+
+    @GetMapping("/member/password")
+    public String memberPassword(Model model, Principal principal) {
+
+        String userId = principal.getName();
+        MemberDto detail = memberService.detail(userId);
+
+        model.addAttribute("detail", detail);
+
+
+        return "member/password";
+    }
+
+    @PostMapping("/member/password")
+    public String memberPasswordSubmit(
+            Model model
+            , MemberInput parameter
+            , Principal principal
+    ) {
+
+        String userId = principal.getName();
+        /**
+         * 관리자 쪽에서 쓰는거라 쓰기 애매함
+         * -> 회원 password랑 입력된 값이 같을때만 수정 하려함
+         * -> 검증 작업이 일어났다고 봐야함
+         */
+        parameter.setUserId(userId);
+
+
+        ServiceResult serviceResult = memberService.updateMemberPassword(parameter);
+        if (!serviceResult.isResult()) {
+            model.addAttribute("message", serviceResult.getMessage());
+            return "common/error";
+        }
+
+        return "redirect:/member/info";
+    }
+
+    @GetMapping("/member/takecourse")
+    public String memberTakeCourse(Model model, Principal principal) {
+
+        String userId = principal.getName();
+
+        List<TakeCourseDto> list = takeCourseService.myCourse(userId);
+
+        model.addAttribute("list", list);
+
+        return "member/takecourse";
     }
 
     @RequestMapping("/member/login")

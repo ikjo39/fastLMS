@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보</title>
+    <style>
+        .list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .list table th, .list table td {
+            border: solid 1px #000;
+        }
+
+        p.nothing {
+            text-align: center;
+            padding: 100px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+
+            $('.row-buttons button').on('click', function() {
+
+                var status = $(this).val();
+                var id = $(this).val();
+
+                var msg = '수강취소 처리 하시겠습니까? '
+                if (!confirm(msg)) {
+                    return false;
+                }
+                <!-- ajax 이용 -->
+
+                var url = '/api/member/course/cancel.api';
+                var parameter = {
+                    takeCourseId: id
+                }
+
+                axios.post(url, parameter).then(function(response) {
+                    console.log(response);
+                    console.log(response.data);
+
+                    response.data = response.data || {};
+                    response.data.header = response.data.header || {};
+
+                    if (!response.data.header.result) {
+                        alert(response.data.header.message);
+                        return false;
+                    }
+
+                    // 정상적일때
+                    alert(' 강좌가 정상적으로 취소되었습니다. ');
+                    location.reload();
+
+                }).catch(function(err) {
+                    console.log(err);
+
+                });
+
+                return false;
+
+            });
+
+        });
+
+    </script>
+</head>
+<body>
+
+        <h1>회원 정보</h1>
+        <div th:replace="/fragment/layout.html :: fragment-body-menu"></div>
+
+        <div>
+            <hr/>
+            <a href="/member/info">회원 정보 수정</a>
+            |
+            <a href="/member/password">비밀번호 변경</a>
+            |
+            <a href="/member/takecourse">내 수강 목록</a>
+            <hr/>
+        </div>
+
+        <div class="list">
+            <table>
+                <thead>
+                <tr>
+                    <th> NO </th>
+                    <th> 등록일 </th>
+                    <th> 강좌명 </th>
+                    <th>
+                        상태
+                    </th>
+                    <th>
+                        비고
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="dataList">
+                <tr th:each="x, i : ${list}">
+                    <td th:text="${i.index + 1}"></td>
+                    <td>
+                        <p th:text="${x.regDtText}"></p>
+                    </td>
+                    <td>
+                        <p th:text="${x.subject}" th:href="'edit.do?id=' + ${x.id}" >
+                        </p>
+                    </td>
+                    <td>
+                        <p th:if="${x.status eq 'REQ'}">수강신청</p>
+                        <p th:if="${x.status eq 'COMPLETE'}">결재완료</p>
+                        <!--
+                        수강 취소 - 내꺼 인증 후 내가 취소함
+                        나와 동일한지 확인 후 해제함
+                        -->
+                        <p th:if="${x.status eq 'CANCEL'}">수강취소</p>
+                    </td>
+                    <td>
+                        <div class="row-buttons" th:if="${x.status eq 'REQ'}">
+                            <!--
+                            value="CANCEL" 의미가 없음 - 문구를 보내서 찾는게 보안적 이슈가 존재함
+                            -->
+                            <button th:value="${x.id}" type="button" >수강취소</button>
+                        </div>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+</body>
+</html>

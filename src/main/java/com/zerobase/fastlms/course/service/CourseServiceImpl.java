@@ -1,12 +1,15 @@
 package com.zerobase.fastlms.course.service;
 
-import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.course.dto.CourseDto;
 import com.zerobase.fastlms.course.entity.Course;
+import com.zerobase.fastlms.course.entity.TakeCourse;
 import com.zerobase.fastlms.course.mapper.CourseMapper;
 import com.zerobase.fastlms.course.model.CourseInput;
 import com.zerobase.fastlms.course.model.CourseParam;
+import com.zerobase.fastlms.course.model.ServiceResult;
+import com.zerobase.fastlms.course.model.TakeCourseInput;
 import com.zerobase.fastlms.course.repository.CourseRepository;
+import com.zerobase.fastlms.course.repository.TakeCourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -14,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +26,7 @@ import java.util.Optional;
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
+    private final TakeCourseRepository takeCourseRepository;
     private final CourseMapper courseMapper;
 
     private LocalDate getLocalDate(String value) {
@@ -116,7 +121,7 @@ public class CourseServiceImpl implements CourseService {
             for (String x : ids) {
                 long id = 0L;
 
-                try{
+                try {
                     id = Long.parseLong(x);
                 } catch (Exception e) {
                 }
@@ -130,5 +135,84 @@ public class CourseServiceImpl implements CourseService {
         return true;
     }
 
+    @Override
+    public List<CourseDto> frontList(CourseParam parameter) {
+
+        if (parameter.getCategoryId() < 1) {
+            List<Course> courseList = courseRepository.findAll();
+
+            //  of 사용 목적: Course라는 raw한 entity를 dto로 매핑해서 리턴하고자함
+            //
+            return CourseDto.of(courseList);
+        }
+
+
+        return courseRepository.findByCategoryId(parameter.getCategoryId())
+                .map(CourseDto::of).orElse(null);
+
+//        Optional<List<Course>> courseRepository.findByCategoryId(parameter.getCategoryId());
+//        if (optionalCourses.isPresent()) {
+//            return CourseDto.of(optionalCourses.get());
+//        }
+//
+//        //  of 사용 목적: Course라는 raw한 entity를 dto로 매핑해서 리턴하고자함
+//        //
+//        return null;
+    }
+
+    @Override
+    public CourseDto frontDetail(long id) {
+        Optional<Course> optionalCourse = courseRepository.findById(id);
+        if (optionalCourse.isPresent()) {
+            return CourseDto.of(optionalCourse.get());
+        }
+        return null;
+    }
+
+    /*
+    *   수강 신청
+    * */
+    @Override
+    public ServiceResult req(TakeCourseInput parameter) {
+
+        ServiceResult result = new ServiceResult();
+
+        Optional<Course> optionalCourse
+                = courseRepository.findById(parameter.getCourseId());
+        if (!optionalCourse.isPresent()) {
+            result.setResult(false);
+            result.setMessage("강좌 정보가 존재하지 않습니다.");
+            return result;
+        }
+        Course course = optionalCourse.get();
+
+        String[] statusList = {TakeCourse.STATUS_REQ, TakeCourse.STATUS_COMPLETE};
+
+        // 이미 신청정보가 있는지 확인
+        long count = takeCourseRepository.countByCourseIdAndUserIdAndStatusIn(
+                        course.getId()
+                , parameter.getUserId()
+                , Arrays.asList(statusList));
+
+        if (count > 0) {
+            result.setResult(false);
+            result.setMessage("이미 신청한 강좌 정보가 존재합니다.");
+            return result;
+        }
+
+
+        TakeCourse takeCourse = TakeCourse.builder()
+                .courseId(course.getId())
+                .userId(parameter.getUserId())
+                .payPrice(course.getSalePrice())
+                .regDt(LocalDateTime.now())
+                .status(TakeCourse.STATUS_REQ)
+                .build();
+        takeCourseRepository.save(takeCourse);
+
+        result.setResult(true);
+        result.setMessage("");
+        return result;
+    }
 
 }

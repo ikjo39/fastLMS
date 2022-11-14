@@ -15,12 +15,14 @@ import java.util.List;
 @Data
 public class CategoryDto {
     Long id;
-
     String categoryName;
     int sortValue;
 
     // 사용가능여부
     boolean usingYn;
+
+    // ADD COLUMNS
+    int courseCount;
 
     public static List<CategoryDto> of(List<Category> categories) {
         if (categories != null) {
@@ -41,5 +43,4 @@ public class CategoryDto {
                 .usingYn(category.isUsingYn())
                 .build();
     }
-
 }
