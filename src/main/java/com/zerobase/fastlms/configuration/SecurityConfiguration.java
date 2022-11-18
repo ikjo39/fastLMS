@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring().mvcMatchers(
-                "member/register"
+                "/favicon.ico", "member/register", "/files/**"
         );
     }
 

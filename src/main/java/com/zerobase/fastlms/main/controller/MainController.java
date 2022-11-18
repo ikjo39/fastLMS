@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RequiredArgsConstructor
 @Controller //@RestController 보다 @Controller를 씀, 이때 문자열을 return하면 애러가 뜸
 // Response 객체를 이용해 return 할 수 있음
@@ -21,8 +23,14 @@ public class MainController {
     private final MailComponents mailComponents;
 
     @RequestMapping("/")
-    public String index() {
+    public String index(HttpServletRequest request) {
+
+//        String userAgent = RequestUtils.getUserAgent(request);
+//        String clientIp = RequestUtils.getClientIP(request);
 //
+//        log.info(userAgent);
+//        log.info(clientIp);
+
 //        String email = "chi4321@naver.com";
 //        String subject = "안녕하세요 제로베이스입니다.";
 //        String text = "<p>안녕하세요.</p> <p>반갑습니다.</>";

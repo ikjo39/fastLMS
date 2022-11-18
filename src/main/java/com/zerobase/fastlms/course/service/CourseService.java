@@ -45,9 +45,13 @@ public interface CourseService {
      */
     CourseDto frontDetail(long id);
 
-
     /**
      * 수강 신청 - front용
      */
     ServiceResult req(TakeCourseInput parameter);
+
+    /**
+     * 전체 강좌 목록 - 데이터가 많아지면 문제가 될 수도 있음
+     */
+    List<CourseDto> listAll();
 }

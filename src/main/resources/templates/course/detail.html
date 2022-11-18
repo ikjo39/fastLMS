@@ -75,6 +75,10 @@
             <p>할인가격: <span th:text="${detail.salePrice}">0</span></p>
         </div>
 
+        <div>
+            <img th:src="${detail.urlFileName}"/>
+        </div>
+
         <!--던질때 현재 강좌코드, 내 정보가 있어야함
         내 정보는 이 페이지에서 던지면 다른 사람에게 가입 시킬 수 있음
         내정보는 항상 로그인 된 세션에서 가져와야함-->
