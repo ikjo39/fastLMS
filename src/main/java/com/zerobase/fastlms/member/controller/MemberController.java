@@ -1,5 +1,6 @@
 package com.zerobase.fastlms.member.controller;
 
+import com.zerobase.fastlms.History.service.HistoryService;
 import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.course.dto.TakeCourseDto;
 import com.zerobase.fastlms.course.model.ServiceResult;
@@ -7,8 +8,6 @@ import com.zerobase.fastlms.course.service.TakeCourseService;
 import com.zerobase.fastlms.member.model.MemberInput;
 import com.zerobase.fastlms.member.model.ResetPasswordInput;
 import com.zerobase.fastlms.member.service.MemberService;
-import com.zerobase.fastlms.util.PageUtil;
-import com.zerobase.fastlms.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +26,7 @@ public class MemberController {
     //    @Autowired 권장 X -> 생성자로 주입받게끔 함 -> @RequiredArgsConstructor
     private final MemberService memberService;
     private final TakeCourseService takeCourseService;
+    private final HistoryService historyService;
 
     // /member/registor
     //    @RequestMapping(value="/member/register", method = RequestMethod.GET)

@@ -1,5 +1,6 @@
 package com.zerobase.fastlms.member.service;
 
+import com.zerobase.fastlms.History.repository.HistoryRepository;
 import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.admin.mapper.MemberMapper;
 import com.zerobase.fastlms.admin.model.MemberParam;
@@ -189,10 +190,16 @@ public class MemberServiceImpl implements MemberService {
 
         long totalCount = memberMapper.selectListCount(parameter);
 
+        // 여기에 최근 로그인 정보 가져오는 쿼리 쿠가하면 되지 않을까?!
+
         List<MemberDto> list = memberMapper.selectList(parameter);
         if (!CollectionUtils.isEmpty(list)) {
             int i = 0;
             for (MemberDto x : list) {
+                String lastLogin = memberMapper.selectLastLogin(x.getUserId());
+                lastLogin = (lastLogin != null) ? lastLogin : "로그인 안함";
+
+                x.setLastLogin(lastLogin);
                 x.setTotalCount(totalCount);
                 // 여기서 계산하기 애매함
                 x.setSeq(totalCount - parameter.getPageStart() - i);
@@ -333,6 +340,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = optionalMember.get();
+
 
         if (Member.MEMBER_STATUS_REQ.equals(member.getUserStatus())) {
             throw new MemberNotEmailAuthException("이메일을 활성화 이후에 로그인 해주세요.");

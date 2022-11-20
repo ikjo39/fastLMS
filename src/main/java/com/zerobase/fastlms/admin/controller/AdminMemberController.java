@@ -1,5 +1,8 @@
 package com.zerobase.fastlms.admin.controller;
 
+import com.zerobase.fastlms.History.dto.LoginHistoryDto;
+import com.zerobase.fastlms.History.model.HistoryParam;
+import com.zerobase.fastlms.History.service.HistoryService;
 import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.admin.model.MemberInput;
@@ -19,20 +22,21 @@ import java.util.List;
 public class AdminMemberController extends BaseController {
 
     private final MemberService memberService;
+    private final HistoryService historyService;
 
     @GetMapping("/admin/member/list.do")
-    public String list(Model model, MemberParam parameter) {
+    public String list(Model model, MemberParam memberParam) {
 
-        parameter.init();
-        List<MemberDto> members = memberService.list(parameter);
+        memberParam.init();
+        List<MemberDto> members = memberService.list(memberParam);
 
-        long totalCount= 0;
+        long totalCount = 0;
         if (members != null && members.size() > 0) {
             totalCount = members.get(0).getTotalCount();
         }
 
-        String queryString = parameter.getQueryString();
-        String pagerHtml = getPagerHtml(totalCount, parameter.getPageSize(), parameter.getPageIndex(), queryString);
+        String queryString = memberParam.getQueryString();
+        String pagerHtml = getPagerHtml(totalCount, memberParam.getPageSize(), memberParam.getPageIndex(), queryString);
 
         model.addAttribute("list", members);
         model.addAttribute("totalCount", totalCount);
@@ -42,12 +46,24 @@ public class AdminMemberController extends BaseController {
     }
 
     @GetMapping("/admin/member/detail.do")
-    public String detail(Model model, MemberParam parameter) {
+    public String detail(Model model, MemberParam parameter,
+                         HistoryParam historyParam) {
 
         parameter.init();
+        historyParam.init();
 
         MemberDto member = memberService.detail(parameter.getUserId());
+
+        List<LoginHistoryDto> loginHistories = historyService.list(historyParam, parameter.getUserId());
+
+
         model.addAttribute("member", member);
+        model.addAttribute("loginLog", loginHistories);
+//
+//        member = memberService.detail(parameter.getUserId());
+//        model.addAttribute("member", member);
+
+
 
         return "admin/member/detail";
     }

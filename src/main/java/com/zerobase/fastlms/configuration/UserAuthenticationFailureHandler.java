@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class UserAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-
     @Override
     public void onAuthenticationFailure(
             HttpServletRequest request
@@ -31,4 +30,6 @@ public class UserAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         super.onAuthenticationFailure(request, response, exception);
 
     }
+
+
 }

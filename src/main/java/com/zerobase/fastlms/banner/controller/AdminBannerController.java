@@ -1,6 +1,11 @@
-package com.zerobase.fastlms.course.controller;
+package com.zerobase.fastlms.banner.controller;
 
 import com.zerobase.fastlms.admin.service.CategoryService;
+import com.zerobase.fastlms.banner.dto.BannerDto;
+import com.zerobase.fastlms.banner.model.BannerInput;
+import com.zerobase.fastlms.banner.model.BannerParam;
+import com.zerobase.fastlms.banner.service.BannerService;
+import com.zerobase.fastlms.course.controller.BaseController;
 import com.zerobase.fastlms.course.dto.CourseDto;
 import com.zerobase.fastlms.course.model.CourseInput;
 import com.zerobase.fastlms.course.model.CourseParam;
@@ -18,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -29,61 +35,55 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class AdminCourseController extends BaseController {
+public class AdminBannerController extends BaseController {
 
-    private final CourseService courseService;
-    private final CategoryService categoryService;
+    private final BannerService bannerService;
 
-    @GetMapping("/admin/course/list.do")
-    public String list(Model model, CourseParam parameter) {
+    @GetMapping("/admin/banner/list.do")
+    public String list(Model model, BannerParam parameter) {
 
         parameter.init();
-        List<CourseDto> courseList = courseService.list(parameter);
+        List<BannerDto> bannerList = bannerService.list(parameter);
 
         long totalCount = 0;
 
-        if (!CollectionUtils.isEmpty(courseList)) {
-            totalCount = courseList.get(0).getTotalCount();
+        if (!CollectionUtils.isEmpty(bannerList)) {
+            totalCount = bannerList.get(0).getTotalCount();
         }
 
         String queryString = parameter.getQueryString();
         String pagerHtml = getPagerHtml(totalCount, parameter.getPageSize(), parameter.getPageIndex(), queryString);
 
-        model.addAttribute("list", courseList);
+        model.addAttribute("list", bannerList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("pager", pagerHtml);
 
-        return "admin/course/list";
+        return "admin/banner/list";
     }
 
     /*
      *   상세에서 수정할 수 있어야함 - edit.do, add.do는 동일함 - id가 있냐없냐임
      *   물론 특정데이터에 따라 한번 입력되면 수정이 안되는건 있을 수 있는데 이건 배제함
      * */
-    @GetMapping(value = {"/admin/course/add.do", "/admin/course/edit.do"})
-    public String add(Model model, HttpServletRequest request, CourseInput parameter) {
-
-        // 카테고리 정보 내려줘야 함
-        model.addAttribute("category", categoryService.list());
-
+    @GetMapping(value = {"/admin/banner/add.do", "/admin/banner/edit.do"})
+    public String add(Model model, HttpServletRequest request, BannerInput parameter) {
 
         boolean editMode = request.getRequestURI().contains("/edit.do");
-        CourseDto detail = new CourseDto();
+        BannerDto detail = new BannerDto();
 
         if (editMode) {
             long id = parameter.getId();
-            CourseDto existCourse = courseService.getById(id);
-            if (existCourse == null) {
+            BannerDto existBanner = bannerService.getById(id);
+            if (existBanner == null) {
                 // error 처리
-                model.addAttribute("message", "강좌 정보가 존재하지 않습니다.");
+                model.addAttribute("message", "배너 정보가 존재하지 않습니다.");
                 return "common/error";
             }
-            detail = existCourse;
+            detail = existBanner;
         }
-
         model.addAttribute("editMode", editMode);
         model.addAttribute("detail", detail);
-        return "admin/course/add";
+        return "admin/banner/add";
     }
 
     private String[] getNewSaveFile(String baseLocalPath, String baseUrlPath, String originalFilename) {
@@ -137,15 +137,13 @@ public class AdminCourseController extends BaseController {
     }
 
 
-    @PostMapping(value = {"/admin/course/add.do", "/admin/course/edit.do"})
+    @PostMapping(value = {"/admin/banner/add.do", "/admin/banner/edit.do"})
     public String addSubmit(
             Model model
             , HttpServletRequest request
-            , CourseInput parameter
-//            , List<MultipartFile>
+            , BannerInput parameter
             , MultipartFile file
     ) {
-
         String saveFileName = "";
         String urlFileName = "";
         if (file.getSize() != 0) {
@@ -154,13 +152,14 @@ public class AdminCourseController extends BaseController {
             String baseLocalPath = "C:\\dev\\springStudy\\fastLMS\\fastLMS\\files";
             String baseUrlPath = "/files";
             String[] arrFileName = getNewSaveFile(baseLocalPath, baseUrlPath, originalFilename);
+
             saveFileName = arrFileName[0];
             urlFileName = arrFileName[1];
 
             File newFile = new File(saveFileName);
 
             try {
-                FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(newFile));
+                FileCopyUtils.copy(file.getInputStream(), Files.newOutputStream(newFile.toPath()));
             } catch (Exception e) {
                 log.info("##########################");
                 log.info(e.getMessage());
@@ -175,26 +174,28 @@ public class AdminCourseController extends BaseController {
 
         if (editMode) { // validation check
             long id = parameter.getId();
-            CourseDto existCourse = courseService.getById(id);
-            if (existCourse == null) {
+            BannerDto existBanner = bannerService.getById(id);
+            if (existBanner == null) {
                 // error 처리
-                model.addAttribute("message", "강좌 정보가 존재하지 않습니다.");
+                model.addAttribute("message", "배너 정보가 존재하지 않습니다.");
                 return "common/error";
             }
-            boolean result = courseService.set(parameter);
+            boolean result = bannerService.set(parameter);
         } else {
-            boolean result = courseService.add(parameter);
+            System.out.println(request.getParameter("target"));
+            System.out.println(parameter.getTarget());
+            boolean result = bannerService.add(parameter);
         }
 
 
-        return "redirect:/admin/course/list.do";
+        return "redirect:/admin/banner/list.do";
     }
 
-    @PostMapping("/admin/course/delete.do")
+    @PostMapping("/admin/banner/delete.do")
     public String del(Model model, HttpServletRequest request, CourseInput parameter) {
 
-        boolean result = courseService.del(parameter.getIdList());
+        boolean result = bannerService.del(parameter.getIdList());
 
-        return "redirect:/admin/course/list.do";
+        return "redirect:/admin/banner/list.do";
     }
 }

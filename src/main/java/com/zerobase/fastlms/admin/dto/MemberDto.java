@@ -43,6 +43,8 @@ public class MemberDto {
     String addr;
     String addrDetail;
 
+    String lastLogin;
+
     public static MemberDto of(Member member) {
 
         return MemberDto.builder()

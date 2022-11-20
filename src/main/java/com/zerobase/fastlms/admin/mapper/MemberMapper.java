@@ -13,6 +13,6 @@ public interface MemberMapper {
     long selectListCount(MemberParam parameter);
     List<MemberDto> selectList(MemberParam parameter);
 
-
+    String selectLastLogin(String id);
 
 }

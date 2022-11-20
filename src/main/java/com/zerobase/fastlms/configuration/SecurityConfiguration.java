@@ -1,5 +1,6 @@
 package com.zerobase.fastlms.configuration;
 
+import com.zerobase.fastlms.History.repository.HistoryRepository;
 import com.zerobase.fastlms.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfiguration {
 
+    private final LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler;
+
     private final MemberService memberService;
 
     AuthenticationManager authenticationManager;
@@ -36,6 +39,8 @@ public class SecurityConfiguration {
     UserAuthenticationFailureHandler getFailureHandler() {
         return new UserAuthenticationFailureHandler();
     }
+
+
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -74,6 +79,7 @@ public class SecurityConfiguration {
                 .formLogin()
                 .loginPage("/member/login")
                 .defaultSuccessUrl("/")
+                .successHandler(loginAuthenticationSuccessHandler)
                 .failureHandler(getFailureHandler()).permitAll()
                 .and()
                 .logout()

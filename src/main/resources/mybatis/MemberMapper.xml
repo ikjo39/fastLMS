@@ -42,12 +42,20 @@
 
     <select id="selectList" resultType="com.zerobase.fastlms.admin.dto.MemberDto">
         select *
-        from member
+        from member m
         where 1 = 1
 
         <include refid="selectListWhere"/>
 
         limit #{pageStart}, #{pageEnd}
         <!-- limit 0, 10 -->
+    </select>
+
+    <select id="selectLastLogin" resultType="String">
+        select login_dt
+        from login_history
+        where email = #{id}
+        order by login_dt desc
+        limit 1;
     </select>
 </mapper>

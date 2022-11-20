@@ -8,29 +8,40 @@ package com.zerobase.fastlms.main.controller;
  *   클래스(비효율), 속성, 메서드(이게 맞음) 중 하나가 함
  * */
 
+import com.zerobase.fastlms.banner.dto.BannerDto;
+import com.zerobase.fastlms.banner.model.BannerParam;
+import com.zerobase.fastlms.banner.service.BannerService;
 import com.zerobase.fastlms.component.MailComponents;
+import com.zerobase.fastlms.util.RequestUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller //@RestController 보다 @Controller를 씀, 이때 문자열을 return하면 애러가 뜸
 // Response 객체를 이용해 return 할 수 있음
 public class MainController {
 
     private final MailComponents mailComponents;
+    private final BannerService bannerService;
 
     @RequestMapping("/")
-    public String index(HttpServletRequest request) {
+    public String index(Model model, HttpServletRequest request, BannerParam parameter) {
 
-//        String userAgent = RequestUtils.getUserAgent(request);
-//        String clientIp = RequestUtils.getClientIP(request);
-//
-//        log.info(userAgent);
-//        log.info(clientIp);
+        String userAgent = RequestUtils.getUserAgent(request);
+        String clientIp = RequestUtils.getClientIP(request);
 
+        List<BannerDto> bannerDtos = bannerService.list(parameter);
+        
+        log.info(userAgent);
+        log.info(clientIp);
+        model.addAttribute("list", bannerDtos);
 //        String email = "chi4321@naver.com";
 //        String subject = "안녕하세요 제로베이스입니다.";
 //        String text = "<p>안녕하세요.</p> <p>반갑습니다.</>";
