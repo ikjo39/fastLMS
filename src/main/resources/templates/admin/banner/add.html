@@ -42,7 +42,9 @@
             <table>
                 <tbody>
                     <tr>
-                        <th>배너명</th>
+                        <th>
+                            배너명
+                        </th>
                         <td>
                             <input th:value="${detail.alterText}" type="text" name="alterText" required placeholder="배너명 입력"/>
                         </td>
@@ -52,7 +54,7 @@
                             배너 파일
                         </th>
                         <td>
-                            <input type="file" name="file"/>
+                            <input th:value="${detail.fileName}" type="file" name="file"/>
                         </td>
                     </tr>
                     <tr>

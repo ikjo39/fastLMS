@@ -41,6 +41,7 @@ public class BannerDto {
     public static BannerDto of(Banner banner) {
         return BannerDto.builder()
                 .id(banner.getId())
+                .alterText(banner.getAlterText())
                 .url(banner.getUrl())
                 .target(banner.getTarget())
                 .sequence(banner.getSequence())

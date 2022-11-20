@@ -19,4 +19,11 @@
         limit #{pageStart}, #{pageEnd}
         <!-- limit 0, 10 -->
     </select>
+
+    <select id="selectAll" resultType="com.zerobase.fastlms.banner.dto.BannerDto">
+        select *
+        from banner
+        where open = true
+        order by sequence
+    </select>
 </mapper>

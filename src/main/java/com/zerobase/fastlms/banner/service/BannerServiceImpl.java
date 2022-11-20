@@ -103,6 +103,13 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    public List<BannerDto> bannerList() {
+        List<BannerDto> list = bannerMapper.selectAll();
+
+        return list;
+    }
+
+    @Override
     public BannerDto getById(long id) {
         return bannerRepository.findById(id).map(BannerDto::of).orElse(null);
     }
@@ -131,7 +138,6 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public List<BannerDto> listAll() {
-
         List<Banner> bannerList = bannerRepository.findAll();
 
         return BannerDto.of(bannerList);

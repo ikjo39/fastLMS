@@ -37,7 +37,7 @@ public class MainController {
         String userAgent = RequestUtils.getUserAgent(request);
         String clientIp = RequestUtils.getClientIP(request);
 
-        List<BannerDto> bannerDtos = bannerService.list(parameter);
+        List<BannerDto> bannerDtos = bannerService.bannerList();
         
         log.info(userAgent);
         log.info(clientIp);

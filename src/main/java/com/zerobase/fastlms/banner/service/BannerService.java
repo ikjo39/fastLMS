@@ -29,6 +29,11 @@ public interface BannerService {
     List<BannerDto> list(BannerParam parameter);
 
     /**
+     * 배너 목록
+     */
+    List<BannerDto> bannerList();
+
+    /**
      * 배너 상세 정보
      */
     BannerDto getById(long id);
